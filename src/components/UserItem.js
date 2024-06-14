@@ -5,6 +5,7 @@ const UserItem = ({ record, handleEdit, handleDelete, loading }) => (
   <span key={record?.id}>
     <Button
       onClick={() => {
+        console.log("Edit button clicked");
         handleEdit(record);
       }}
       style={{ marginRight: 10 }}

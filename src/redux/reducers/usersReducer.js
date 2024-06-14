@@ -17,16 +17,25 @@ const usersReducer = (state = initialState, action) => {
       return {
         ...state,
         users: state.users.map((user) =>
-          user.id === action.payload.id ? action.payload.user : user
+          user.id === action.payload.id ? { ...user, ...action.payload } : user
         ),
       };
-    case "UPDATE_USER_SUCCESS":
+    case "EDIT_USER_SUCCESS":
       return {
         ...state,
         users: state.users.map((user) =>
           user.id === action.payload.id ? action.payload : user
         ),
       };
+
+    case "EDIT_USER_SUCCESS":
+      return {
+        ...state,
+        users: state.users.map((user) =>
+          user.id === action.payload.id ? action.payload : user
+        ),
+      };
+
     default:
       return state;
   }

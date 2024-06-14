@@ -16,7 +16,7 @@ const SearchBar = ({ setSearchType, searchType, handleSearch }) => (
     <Input.Search
       placeholder={`Search by ${searchType}`}
       style={{ marginLeft: 10, width: 160 }}
-      onSearch={handleSearch}
+      onChange={(e) => handleSearch(e.target.value)}
     />
   </>
 );

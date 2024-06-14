@@ -10,22 +10,24 @@ const EditUserModal = ({ visible, onCancel, onOk, user, loading }) => {
     }
   }, [user, form]);
 
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        form.resetFields();
+        onOk({ id: user.id, ...values });
+      })
+      .catch((info) => {
+        console.log("Validation Failed:", info);
+      });
+  };
+
   return (
     <Modal
       title="Edit User"
-      open={visible}
+      visible={visible}
       onCancel={onCancel}
-      onOk={() =>
-        form
-          .validateFields()
-          .then((values) => {
-            form.resetFields();
-            onOk(values);
-          })
-          .catch((info) => {
-            console.log("Validation Failed:", info);
-          })
-      }
+      onOk={handleOk}
       confirmLoading={loading}
     >
       <Form form={form} initialValues={user || {}}>
@@ -39,7 +41,9 @@ const EditUserModal = ({ visible, onCancel, onOk, user, loading }) => {
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Please enter an email", type:"email" }]}
+          rules={[
+            { required: true, message: "Please enter an email", type: "email" },
+          ]}
         >
           <Input />
         </Form.Item>

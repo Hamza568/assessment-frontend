@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { fetchUsers, deleteUser, addUser, editUser } from "./redux/actions/usersActions";
+import {
+  fetchUsers,
+  deleteUser,
+  addUser,
+  editUser,
+} from "./redux/actions/usersActions";
 import UserList from "./components/UserList";
 import UserItem from "./components/UserItem";
 import { Button, notification } from "antd";
@@ -35,6 +40,8 @@ const App = ({ users, fetchUsers, deleteUser, addUser, editUser }) => {
         description: `${action.name} successful`,
         duration: 1,
       });
+      // Refresh the user list after a successful action
+      fetchUsers();
     } catch (error) {
       notification.error({
         message: "Error",
@@ -46,25 +53,24 @@ const App = ({ users, fetchUsers, deleteUser, addUser, editUser }) => {
     }
   };
 
-  const handleDelete = (id) => handleAction(deleteUser, id);
+  const handleDelete = (id) => {
+    handleAction(deleteUser, id);
+  };
 
   const handleCreate = (values) => {
     handleAction(addUser, values).then(() => setIsCreateModalVisible(false));
   };
 
-  const handleEdit = async (values) => {
-    setLoading(true);
-    setLoadingTable(true);
-    try {
-      await editUser(editingUser.id, values);
+  const handleEdit = (record) => {
+    setEditingUser(record);
+    setIsEditModalVisible(true);
+  };
+
+  const handleEditSubmit = (values) => {
+    handleAction(editUser, values.id, values).then(() => {
       setIsEditModalVisible(false);
-      fetchUsers();
-    } catch (error) {
-      console.warn(error.message);
-    } finally {
-      setLoading(false);
-      setLoadingTable(false);
-    }
+      setEditingUser(null);
+    });
   };
 
   const handleSearch = (value) => {
@@ -106,19 +112,28 @@ const App = ({ users, fetchUsers, deleteUser, addUser, editUser }) => {
       <div style={{ marginLeft: 10 }}>
         <h1>Users</h1>
         <Button onClick={() => setIsCreateModalVisible(true)}>Add User</Button>
-        <SearchBar setSearchType={setSearchType} searchType={searchType} handleSearch={handleSearch} />
+        <SearchBar
+          setSearchType={setSearchType}
+          searchType={searchType}
+          handleSearch={handleSearch}
+        />
       </div>
-      <UserList filteredUsers={filteredUsers} columns={columns} loadingTable={loadingTable} />
+      <UserList
+        filteredUsers={filteredUsers}
+        columns={columns}
+        loadingTable={loadingTable}
+      />
       <EditUserModal
         visible={isEditModalVisible}
         onCancel={() => {
           setIsEditModalVisible(false);
           setEditingUser(null);
         }}
-        onOk={handleEdit}
+        onOk={handleEditSubmit}
         user={editingUser}
         loading={loading}
       />
+
       <CreateUserModal
         visible={isCreateModalVisible}
         onCancel={() => {
